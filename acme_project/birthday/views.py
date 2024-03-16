@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.core.paginator import Paginator
 
 from .models import Birthday
 from .forms import BirthdayForm
@@ -10,7 +11,9 @@ def birthday(request, pk=None):
         instance = get_object_or_404(Birthday, pk=pk)    
     else:        
         instance = None   
-    form = BirthdayForm(request.POST or None, instance=instance)
+    form = BirthdayForm(request.POST or None,
+                        files=request.FILES or None,
+                        instance=instance)
     context = {'form': form}
     if form.is_valid():
         form.save()
@@ -32,7 +35,7 @@ def delete_birthday(request, pk):
 
 
 def birthday_list(request):
-    # Получаем все объекты модели Birthday из БД.
+    
     birthdays = Birthday.objects.all()
     # Передаём их в контекст шаблона.
     context = {'birthdays': birthdays}
